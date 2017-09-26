@@ -31,7 +31,9 @@ public class ChangeRequestTitleValidatorStrategyTrait extends TitleValidatorStra
 
     @Override
     protected void decorateContext(SCMSourceContext<?, ?> context) {
-        context.withFilter(new ChangeRequestTitleValidatorStrategyTrait.ExcludeInvalidTitlePRsSCMHeadFilter(super.getJiraServerIdx()));
+        if (getJiraServerIdx() > -1) {
+            context.withFilter(new ChangeRequestTitleValidatorStrategyTrait.ExcludeInvalidTitlePRsSCMHeadFilter(super.getJiraServerIdx()));
+        }
     }
 
     /**

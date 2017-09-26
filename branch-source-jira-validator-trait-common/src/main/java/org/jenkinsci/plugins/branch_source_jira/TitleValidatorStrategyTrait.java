@@ -1,13 +1,12 @@
 package org.jenkinsci.plugins.branch_source_jira;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.Resolution;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.plugins.git.GitSCM;
 import hudson.plugins.jira.JiraProjectProperty;
 import hudson.plugins.jira.JiraSite;
-import hudson.plugins.jira.model.JiraIssue;
 import hudson.scm.SCMDescriptor;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMHead;
@@ -16,6 +15,9 @@ import jenkins.scm.api.trait.SCMSourceContext;
 import jenkins.scm.api.trait.SCMSourceRequest;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.QueryParameter;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -69,7 +71,7 @@ public abstract class TitleValidatorStrategyTrait extends SCMSourceTrait{
 
         public ListBoxModel doFillJiraServerIdxItems() {
             ListBoxModel r = new ListBoxModel();
-            r.add("", "");
+            r.add("", "-1");
             JiraProjectProperty.DescriptorImpl jiraSitesDescriptor = (JiraProjectProperty.DescriptorImpl) Jenkins.getInstance().getDescriptor("hudson.plugins.jira.JiraProjectProperty");
             JiraSite[] sites = jiraSitesDescriptor.getSites();
             for (int i = 0; i < sites.length; i++) {
@@ -78,6 +80,18 @@ public abstract class TitleValidatorStrategyTrait extends SCMSourceTrait{
             }
 
             return r;
+        }
+
+        @Restricted(NoExternalUse.class)
+        public FormValidation doCheckJiraServerIdx(@QueryParameter String value) {
+
+            FormValidation formValidation = FormValidation.ok();
+
+            if (("-1".equals(value)) || ("".equals(value))) {
+                formValidation = FormValidation.error("You have to choose a Jira server");
+            }
+
+            return formValidation;
         }
     }
 
